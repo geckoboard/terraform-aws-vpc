@@ -59,6 +59,11 @@ output "vpc_main_route_table_id" {
 //  value       = "${element(concat(aws_vpc.this.*.ipv6_cidr_block, list("")), 0)}"
 //}
 
+output "vpc_secondary_cidr_blocks" {
+  description = "List of secondary CIDR blocks of the VPC"
+  value       = ["${aws_vpc_ipv4_cidr_block_association.this.*.cidr_block}"]
+}
+
 # Subnets
 output "private_subnets" {
   description = "List of IDs of private subnets"
@@ -120,6 +125,16 @@ output "elasticache_subnets_cidr_blocks" {
   value       = ["${aws_subnet.elasticache.*.cidr_block}"]
 }
 
+output "intra_subnets" {
+  description = "List of IDs of intra subnets"
+  value       = ["${aws_subnet.intra.*.id}"]
+}
+
+output "intra_subnets_cidr_blocks" {
+  description = "List of cidr_blocks of intra subnets"
+  value       = ["${aws_subnet.intra.*.cidr_block}"]
+}
+
 output "elasticache_subnet_group" {
   description = "ID of elasticache subnet group"
   value       = "${element(concat(aws_elasticache_subnet_group.elasticache.*.id, list("")), 0)}"
@@ -141,6 +156,27 @@ output "private_route_table_ids" {
   value       = ["${aws_route_table.private.*.id}"]
 }
 
+output "database_route_table_ids" {
+  description = "List of IDs of database route tables"
+  value       = ["${coalescelist(aws_route_table.database.*.id, aws_route_table.private.*.id)}"]
+}
+
+output "redshift_route_table_ids" {
+  description = "List of IDs of redshift route tables"
+  value       = ["${coalescelist(aws_route_table.redshift.*.id, aws_route_table.private.*.id)}"]
+}
+
+output "elasticache_route_table_ids" {
+  description = "List of IDs of elasticache route tables"
+  value       = ["${coalescelist(aws_route_table.elasticache.*.id, aws_route_table.private.*.id)}"]
+}
+
+output "intra_route_table_ids" {
+  description = "List of IDs of intra route tables"
+  value       = ["${aws_route_table.intra.*.id}"]
+}
+
+# Nat gateway
 output "nat_ids" {
   description = "List of allocation ID of Elastic IPs created for AWS NAT Gateway"
   value       = ["${aws_eip.nat.*.id}"]
